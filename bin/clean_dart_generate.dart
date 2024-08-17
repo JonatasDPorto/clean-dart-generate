@@ -137,6 +137,7 @@ Future<void> delete$modelName(String id) async {
 String _generateControllerClass(String modelFileName, String modelName) {
   return '''
 import 'package:barber_shop/domain/exceptions/server_exception.dart';
+import '../../domain/errors/error.dart';
 import '../repositories/${modelFileName}_repository.dart';
 import 'package:dart_either/dart_either.dart';
 import '../../domain/errors/crud_error.dart';
