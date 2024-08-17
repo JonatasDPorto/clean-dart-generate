@@ -2,7 +2,7 @@ name: clean_dart_generate
 description: A CLI tool for generating controllers and repositories for models.
 homepage: https://github.com/JonatasDPorto/clean-dart-generate.git
 repository: https://github.com/JonatasDPorto/clean-dart-generate.git
-version: 1.0.0
+version: 1.0.1
 # repository: https://github.com/my_org/my_repo
 
 environment:

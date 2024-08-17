@@ -20,15 +20,17 @@ void main(List<String> arguments) {
 
   for (var file in modelFiles) {
     if (file is File) {
-      final modelName = p.basenameWithoutExtension(file.path).capitalize();
-      _createRepositoryAndController(modelName);
-      _createExceptions(modelName);
+      final modelFileName = p.basenameWithoutExtension(file.path);
+      final modelName =
+          modelFileName.split("_").map((e) => e.capitalize()).join();
+      _createRepositoryAndController(modelFileName, modelName);
+      _createExceptions(modelFileName, modelName);
     }
   }
   _createErrors();
 }
 
-void _createRepositoryAndController(String modelName) {
+void _createRepositoryAndController(String modelFileName, String modelName) {
   final baseDir = 'lib/infra';
   final repositoryDir = Directory(p.join(baseDir, 'repositories'));
   final controllerDir = Directory(p.join(baseDir, 'controllers'));
@@ -36,30 +38,32 @@ void _createRepositoryAndController(String modelName) {
   repositoryDir.createSync(recursive: true);
   controllerDir.createSync(recursive: true);
 
-  final repositoryFile = File(
-      p.join(repositoryDir.path, '${modelName.toLowerCase()}_repository.dart'));
-  final controllerFile = File(
-      p.join(controllerDir.path, '${modelName.toLowerCase()}_controller.dart'));
+  final repositoryFile =
+      File(p.join(repositoryDir.path, '${modelFileName}_repository.dart'));
+  final controllerFile =
+      File(p.join(controllerDir.path, '${modelFileName}_controller.dart'));
 
-  repositoryFile.writeAsStringSync(_generateRepositoryClass(modelName));
-  controllerFile.writeAsStringSync(_generateControllerClass(modelName));
+  repositoryFile
+      .writeAsStringSync(_generateRepositoryClass(modelFileName, modelName));
+  controllerFile
+      .writeAsStringSync(_generateControllerClass(modelFileName, modelName));
 
   print('Generated files for model "$modelName":');
   print(' - ${repositoryFile.path}');
   print(' - ${controllerFile.path}');
 }
 
-void _createExceptions(String modelName) {
+void _createExceptions(String modelFileName, String modelName) {
   final exceptionDir = Directory('lib/domain/exceptions');
 
   if (!exceptionDir.existsSync()) {
     exceptionDir.createSync(recursive: true);
   }
 
-  final crudExceptionFile = File(p.join(
-      exceptionDir.path, '${modelName.toLowerCase()}_crud_exception.dart'));
-  final serverExceptionFile = File(p.join(
-      exceptionDir.path, '${modelName.toLowerCase()}_server_exception.dart'));
+  final crudExceptionFile =
+      File(p.join(exceptionDir.path, '${modelFileName}_crud_exception.dart'));
+  final serverExceptionFile =
+      File(p.join(exceptionDir.path, '${modelFileName}_server_exception.dart'));
 
   crudExceptionFile.writeAsStringSync(_generateCrudExceptionClass(modelName));
   serverExceptionFile
@@ -90,43 +94,43 @@ void _createErrors() {
   print(' - ${serverErrorFile.path}');
 }
 
-String _generateRepositoryClass(String modelName) {
+String _generateRepositoryClass(String modelFileName, String modelName) {
   return '''
-import '../../domain/exceptions/${modelName.toLowerCase()}_crud_exception.dart';
-import '../model/${modelName.toLowerCase()}.dart';
+import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
+import '../model/$modelFileName}.dart';
 
 class ${modelName}Repository {
 Future<void> create$modelName(Map<String, dynamic> data) async {
  // Implement the create operation
- throw Create${modelName}Exception('Failed to create ${modelName.toLowerCase()}');
+ throw Create${modelName}Exception('Failed to create $modelName');
 }
 
 Future<$modelName> read$modelName(String id) async {
  // Implement the read operation
- throw Read${modelName}Exception('Failed to read ${modelName.toLowerCase()}');
+ throw Read${modelName}Exception('Failed to read $modelName');
 }
 
 Future<void> update$modelName(Map<String, dynamic> data) async {
  // Implement the update operation
- throw Update${modelName}Exception('Failed to update ${modelName.toLowerCase()}');
+ throw Update${modelName}Exception('Failed to update $modelName)');
 }
 
 Future<void> delete$modelName(String id) async {
  // Implement the delete operation
- throw Delete${modelName}Exception('Failed to delete ${modelName.toLowerCase()}');
+ throw Delete${modelName}Exception('Failed to delete $modelName');
 }
 }
 ''';
 }
 
-String _generateControllerClass(String modelName) {
+String _generateControllerClass(String modelFileName, String modelName) {
   return '''
-import '../repositories/${modelName.toLowerCase()}_repository.dart';
-import 'package:dartz/dartz.dart';
+import '../repositories/${modelFileName}_repository.dart';
+import 'package:dart_either/dart_either.dart';
 import '../../domain/errors/crud_error.dart';
 import '../../domain/errors/server_error.dart';
-import '../../domain/exceptions/${modelName.toLowerCase()}_crud_exception.dart';
-import '../model/${modelName.toLowerCase()}.dart';
+import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
+import '../model/$modelFileName.dart';
 
 class ${modelName}Controller {
   final ${modelName}Repository repository;
