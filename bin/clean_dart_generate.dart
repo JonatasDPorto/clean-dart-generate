@@ -107,29 +107,66 @@ void _createErrors() {
 
 String _generateRepositoryClass(String modelFileName, String modelName) {
   return '''
+import 'package:dio/dio.dart';
 import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
 import '../model/$modelFileName.dart';
 
 class ${modelName}Repository {
-Future<void> create$modelName(Map<String, dynamic> data) async {
- // Implement the create operation
- throw Create${modelName}Exception('Failed to create $modelName');
-}
+  final Dio _dio = Dio(BaseOptions(baseUrl: "http://my-api/"));
 
-Future<$modelName> read$modelName(String id) async {
- // Implement the read operation
- throw Read${modelName}Exception('Failed to read $modelName');
-}
+  Future<void> create$modelName(Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.post('$modelFileName', data: data);
+      if (response.statusCode != 201) {
+        throw Create${modelName}Exception('Failed to create $modelName');
+      }
+    } on DioError catch (e) {
+      throw Create${modelName}Exception('Failed to create $modelName: \${e.message}');
+    } catch (e) {
+      throw Create${modelName}Exception('Unexpected error: \$e');
+    }
+  }
 
-Future<void> update$modelName(Map<String, dynamic> data) async {
- // Implement the update operation
- throw Update${modelName}Exception('Failed to update $modelName)');
-}
+  Future<$modelName> read$modelName(String id) async {
+    try {
+      final response = await _dio.get('$modelFileName/\$id');
+      if (response.statusCode == 200) {
+        return $modelName.fromJson(response.data);
+      } else {
+        throw Read${modelName}Exception('Failed to read $modelName');
+      }
+    } on DioError catch (e) {
+      throw Read${modelName}Exception('Failed to read $modelName: \${e.message}');
+    } catch (e) {
+      throw Read${modelName}Exception('Unexpected error: \$e');
+    }
+  }
 
-Future<void> delete$modelName(String id) async {
- // Implement the delete operation
- throw Delete${modelName}Exception('Failed to delete $modelName');
-}
+  Future<void> update$modelName(Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.put('$modelFileName/\${data["id"]}', data: data);
+      if (response.statusCode != 200) {
+        throw Update${modelName}Exception('Failed to update $modelName');
+      }
+    } on DioError catch (e) {
+      throw Update${modelName}Exception('Failed to update $modelName: \${e.message}');
+    } catch (e) {
+      throw Update${modelName}Exception('Unexpected error: \$e');
+    }
+  }
+
+  Future<void> delete$modelName(String id) async {
+    try {
+      final response = await _dio.delete('$modelFileName/\$id');
+      if (response.statusCode != 200) {
+        throw Delete${modelName}Exception('Failed to delete $modelName');
+      }
+    } on DioError catch (e) {
+      throw Delete${modelName}Exception('Failed to delete $modelName: \${e.message}');
+    } catch (e) {
+      throw Delete${modelName}Exception('Unexpected error: \$e');
+    }
+  }
 }
 ''';
 }
