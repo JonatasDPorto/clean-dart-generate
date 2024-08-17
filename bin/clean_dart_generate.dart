@@ -120,7 +120,7 @@ class ${modelName}Repository {
       if (response.statusCode != 201) {
         throw Create${modelName}Exception('Failed to create $modelName');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Create${modelName}Exception('Failed to create $modelName: \${e.message}');
     } catch (e) {
       throw Create${modelName}Exception('Unexpected error: \$e');
@@ -135,7 +135,7 @@ class ${modelName}Repository {
       } else {
         throw Read${modelName}Exception('Failed to read $modelName');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Read${modelName}Exception('Failed to read $modelName: \${e.message}');
     } catch (e) {
       throw Read${modelName}Exception('Unexpected error: \$e');
@@ -148,7 +148,7 @@ class ${modelName}Repository {
       if (response.statusCode != 200) {
         throw Update${modelName}Exception('Failed to update $modelName');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Update${modelName}Exception('Failed to update $modelName: \${e.message}');
     } catch (e) {
       throw Update${modelName}Exception('Unexpected error: \$e');
@@ -161,7 +161,7 @@ class ${modelName}Repository {
       if (response.statusCode != 200) {
         throw Delete${modelName}Exception('Failed to delete $modelName');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Delete${modelName}Exception('Failed to delete $modelName: \${e.message}');
     } catch (e) {
       throw Delete${modelName}Exception('Unexpected error: \$e');
