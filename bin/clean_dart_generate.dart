@@ -27,6 +27,7 @@ void main(List<String> arguments) {
       _createExceptions(modelFileName, modelName);
     }
   }
+  _createServerException();
   _createErrors();
 }
 
@@ -62,15 +63,25 @@ void _createExceptions(String modelFileName, String modelName) {
 
   final crudExceptionFile =
       File(p.join(exceptionDir.path, '${modelFileName}_crud_exception.dart'));
-  final serverExceptionFile =
-      File(p.join(exceptionDir.path, '${modelFileName}_server_exception.dart'));
 
   crudExceptionFile.writeAsStringSync(_generateCrudExceptionClass(modelName));
-  serverExceptionFile
-      .writeAsStringSync(_generateServerExceptionClass(modelName));
 
   print('Generated exception files for model "$modelName":');
   print(' - ${crudExceptionFile.path}');
+}
+
+void _createServerException() {
+  final exceptionDir = Directory('lib/domain/exceptions');
+
+  if (!exceptionDir.existsSync()) {
+    exceptionDir.createSync(recursive: true);
+  }
+
+  final serverExceptionFile =
+      File(p.join(exceptionDir.path, 'server_exception.dart'));
+
+  serverExceptionFile.writeAsStringSync(_generateServerExceptionClass());
+
   print(' - ${serverExceptionFile.path}');
 }
 
@@ -97,7 +108,7 @@ void _createErrors() {
 String _generateRepositoryClass(String modelFileName, String modelName) {
   return '''
 import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
-import '../model/$modelFileName}.dart';
+import '../model/$modelFileName.dart';
 
 class ${modelName}Repository {
 Future<void> create$modelName(Map<String, dynamic> data) async {
@@ -125,6 +136,7 @@ Future<void> delete$modelName(String id) async {
 
 String _generateControllerClass(String modelFileName, String modelName) {
   return '''
+import 'package:barber_shop/domain/exceptions/server_exception.dart';
 import '../repositories/${modelFileName}_repository.dart';
 import 'package:dart_either/dart_either.dart';
 import '../../domain/errors/crud_error.dart';
@@ -218,7 +230,7 @@ class Delete${modelName}Exception extends CrudException {
 ''';
 }
 
-String _generateServerExceptionClass(String modelName) {
+String _generateServerExceptionClass() {
   return '''
 class ServerException implements Exception {
   final String message;
