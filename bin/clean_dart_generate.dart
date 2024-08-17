@@ -149,7 +149,7 @@ class ${modelName}Controller {
 
   ${modelName}Controller(this.repository);
 
-  Future<Either<CrudError, void>> create$modelName($modelName data) async {
+  Future<Either<AppError, void>> create$modelName($modelName data) async {
     try {
       await repository.create$modelName(data.toMap());
       return const Right(null);
@@ -158,11 +158,11 @@ class ${modelName}Controller {
     } on ServerException catch (e) {
       return Left(ServerError(e.message));
     } catch (e) {
-      return Left(CrudError('An unknown error occurred: \$e'));
+      return Left(AppError('An unknown error occurred: \$e'));
     }
   }
 
-  Future<Either<CrudError, $modelName>> read$modelName(String id) async {
+  Future<Either<AppError, $modelName>> read$modelName(String id) async {
     try {
       final result = await repository.read$modelName(id);
       return Right(result);
@@ -171,11 +171,11 @@ class ${modelName}Controller {
     } on ServerException catch (e) {
       return Left(ServerError(e.message));
     } catch (e) {
-      return Left(CrudError('An unknown error occurred: \$e'));
+      return Left(AppError('An unknown error occurred: \$e'));
     }
   }
 
-  Future<Either<CrudError, void>> update$modelName($modelName data) async {
+  Future<Either<AppError, void>> update$modelName($modelName data) async {
     try {
       await repository.update$modelName(data.toMap());
       return const Right(null);
@@ -184,11 +184,11 @@ class ${modelName}Controller {
     } on ServerException catch (e) {
       return Left(ServerError(e.message));
     } catch (e) {
-      return Left(CrudError('An unknown error occurred: \$e'));
+      return Left(AppError('An unknown error occurred: \$e'));
     }
   }
 
-  Future<Either<CrudError, void>> delete$modelName(String id) async {
+  Future<Either<AppError, void>> delete$modelName(String id) async {
     try {
       await repository.delete$modelName(id);
       return const Right(null);
@@ -197,7 +197,7 @@ class ${modelName}Controller {
     } on ServerException catch (e) {
       return Left(ServerError(e.message));
     } catch (e) {
-      return Left(CrudError('An unknown error occurred: \$e'));
+      return Left(AppError('An unknown error occurred: \$e'));
     }
   }
 }
