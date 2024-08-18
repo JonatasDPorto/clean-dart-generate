@@ -1,5 +1,7 @@
 String generateRepositoryInterface(String modelFileName, String modelName) {
   return '''
+import 'package:dart_either/dart_either.dart';
+import '../../domain/errors/error.dart';
 import '../model/$modelFileName.dart';
 
 abstract class ${modelName}RepositoryInterface {

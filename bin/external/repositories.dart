@@ -7,12 +7,15 @@ import '../../../domain/errors/crud_error.dart';
 import '../../../domain/errors/server_error.dart';
 import '../../../domain/exceptions/${modelFileName}_crud_exception.dart';
 import '../../../infra/model/$modelFileName.dart';
+import '../../infra/repositories/${modelFileName}_repository_interface.dart';
+import '../datasources/${modelFileName}_datasource.dart';
 
 class ${modelName}Repository extends ${modelName}RepositoryInterface {
   final ${modelName}DatasourceInterface datasource;
 
-  ${modelName}Datasource(this.datasource);
+  ${modelName}Repository(this.datasource);
 
+  @override
   Future<Either<AppError, void>> create$modelName($modelName data) async {
     try {
       await datasource.create$modelName(data.toMap());
@@ -26,6 +29,7 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
     }
   }
 
+  @override
   Future<Either<AppError, $modelName>> read$modelName(String id) async {
     try {
       final result = await datasource.read$modelName(id);
@@ -40,6 +44,7 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
     }
   }
 
+  @override
   Future<Either<AppError, void>> update$modelName($modelName data) async {
     try {
       await datasource.update$modelName(data.toMap());
@@ -53,6 +58,7 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
     }
   }
 
+  @override
   Future<Either<AppError, void>> delete$modelName(String id) async {
     try {
       await datasource.delete$modelName(id);
