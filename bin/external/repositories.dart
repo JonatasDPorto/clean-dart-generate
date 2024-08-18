@@ -2,8 +2,8 @@ String generateRepositoryClass(String modelFileName, String modelName) {
   return '''
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
-import '../model/$modelFileName.dart';
-import '${modelFileName}_repository_interface.dart';
+import '../../infra/model/$modelFileName.dart';
+import '../../infra/repositories/${modelFileName}_repository_interface.dart';
 
 class ${modelName}Repository extends ${modelName}RepositoryInterface {
 
