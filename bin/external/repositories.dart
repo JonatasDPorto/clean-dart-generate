@@ -1,14 +1,12 @@
 String generateRepositoryClass(String modelFileName, String modelName) {
   return '''
+import 'package:dart_either/dart_either.dart';
 import 'package:barber_shop/domain/exceptions/server_exception.dart';
 import '../../../domain/errors/error.dart';
-import '../repositories/${modelFileName}_repository.dart';
-import 'package:dart_either/dart_either.dart';
 import '../../../domain/errors/crud_error.dart';
 import '../../../domain/errors/server_error.dart';
-import '../.././domain/exceptions/${modelFileName}_crud_exception.dart';
-import '../model/$modelFileName.dart';
-import 'datasource.dart';
+import '../../../domain/exceptions/${modelFileName}_crud_exception.dart';
+import '../../../infra/model/$modelFileName.dart';
 
 class ${modelName}Repository extends ${modelName}RepositoryInterface {
   final ${modelName}DatasourceInterface datasource;

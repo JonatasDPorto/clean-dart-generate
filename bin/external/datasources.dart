@@ -5,11 +5,10 @@ import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
 import '../../infra/model/$modelFileName.dart';
 import '../../infra/repositories/${modelFileName}_repository_interface.dart';
 
-class ${modelName}Datasource extends ${modelName}DatasourceInterface {
+class ${modelName}Datasource extends DatasourceInterface {
 
   final CollectionReference collection = FirebaseFirestore.instance.collection('${modelName.toLowerCase()}s');
 
-  @override
   Future<void> create$modelName(Map<String, dynamic> data) async {
     try {
       await collection.add(data);
@@ -20,7 +19,6 @@ class ${modelName}Datasource extends ${modelName}DatasourceInterface {
     }
   }
 
-  @override
   Future<Map<String, dynamic>> read$modelName(String id) async {
     try {
       DocumentSnapshot doc = await collection.doc(id).get();
@@ -36,7 +34,6 @@ class ${modelName}Datasource extends ${modelName}DatasourceInterface {
     }
   }
 
-  @override
   Future<void> update$modelName(Map<String, dynamic> data) async {
     try {
       await collection.doc(data['id']).update(data);
@@ -47,7 +44,6 @@ class ${modelName}Datasource extends ${modelName}DatasourceInterface {
     }
   }
 
-  @override
   Future<void> delete$modelName(String id) async {
     try {
       await collection.doc(id).delete();

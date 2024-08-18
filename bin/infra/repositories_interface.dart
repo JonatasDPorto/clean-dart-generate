@@ -4,13 +4,13 @@ import '../model/$modelFileName.dart';
 
 abstract class ${modelName}RepositoryInterface {
 
-  Future<void> create$modelName(Map<String, dynamic> data);
+  Future<Either<AppError, void>> create$modelName($modelName model);
 
-  Future<Map<String, dynamic>> read$modelName(String id);
+  Future<Either<AppError, $modelName>> read$modelName(String id);
 
-  Future<void> update$modelName(Map<String, dynamic> data);
+  Future<Either<AppError, void>> update$modelName($modelName model);
 
-  Future<void> delete$modelName(String id);
+  Future<Either<AppError, void>> delete$modelName(String id);
 }
 ''';
 }
