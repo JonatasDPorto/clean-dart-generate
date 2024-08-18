@@ -3,9 +3,6 @@ String generateRepositoryInterface(String modelFileName, String modelName) {
 import '../model/$modelFileName.dart';
 
 abstract class ${modelName}RepositoryInterface {
-  final Dio dio;
-
-  ${modelName}RepositoryInterface(this.dio);
 
   Future<void> create$modelName(Map<String, dynamic> data);
 

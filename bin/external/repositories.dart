@@ -1,20 +1,19 @@
 String generateRepositoryClass(String modelFileName, String modelName) {
   return '''
-import 'package:dio/dio.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
 import '../model/$modelFileName.dart';
+import '${modelFileName}_repository_interface.dart';
 
 class ${modelName}Repository extends ${modelName}RepositoryInterface {
-  ${modelName}Repository(super.dio);
+
+  final CollectionReference collection = FirebaseFirestore.instance.collection('${modelName.toLowerCase()}s');
 
   @override
   Future<void> create$modelName(Map<String, dynamic> data) async {
     try {
-      final response = await _dio.post('$modelFileName', data: data);
-      if (response.statusCode != 201) {
-        throw Create${modelName}Exception('Failed to create $modelName');
-      }
-    } on DioException catch (e) {
+      await collection.add(data);
+    } on FirebaseException catch (e) {
       throw Create${modelName}Exception('Failed to create $modelName: \${e.message}');
     } catch (e) {
       throw Create${modelName}Exception('Unexpected error: \$e');
@@ -24,13 +23,13 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
   @override
   Future<$modelName> read$modelName(String id) async {
     try {
-      final response = await _dio.get('$modelFileName/\$id');
-      if (response.statusCode == 200) {
-        return $modelName.fromJson(response.data);
+      DocumentSnapshot doc = await collection.doc(id).get();
+      if (doc.exists) {
+        return $modelName.fromJson(doc.data() as Map<String, dynamic>);
       } else {
-        throw Read${modelName}Exception('Failed to read $modelName');
+        throw Read${modelName}Exception('$modelName not found');
       }
-    } on DioException catch (e) {
+    } on FirebaseException catch (e) {
       throw Read${modelName}Exception('Failed to read $modelName: \${e.message}');
     } catch (e) {
       throw Read${modelName}Exception('Unexpected error: \$e');
@@ -40,11 +39,8 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
   @override
   Future<void> update$modelName(Map<String, dynamic> data) async {
     try {
-      final response = await _dio.put('$modelFileName/\${data["id"]}', data: data);
-      if (response.statusCode != 200) {
-        throw Update${modelName}Exception('Failed to update $modelName');
-      }
-    } on DioException catch (e) {
+      await collection.doc(data['id']).update(data);
+    } on FirebaseException catch (e) {
       throw Update${modelName}Exception('Failed to update $modelName: \${e.message}');
     } catch (e) {
       throw Update${modelName}Exception('Unexpected error: \$e');
@@ -54,11 +50,8 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
   @override
   Future<void> delete$modelName(String id) async {
     try {
-      final response = await _dio.delete('$modelFileName/\$id');
-      if (response.statusCode != 200) {
-        throw Delete${modelName}Exception('Failed to delete $modelName');
-      }
-    } on DioException catch (e) {
+      await collection.doc(id).delete();
+    } on FirebaseException catch (e) {
       throw Delete${modelName}Exception('Failed to delete $modelName: \${e.message}');
     } catch (e) {
       throw Delete${modelName}Exception('Unexpected error: \$e');
