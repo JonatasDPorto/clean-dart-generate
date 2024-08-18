@@ -25,7 +25,7 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
     try {
       DocumentSnapshot doc = await collection.doc(id).get();
       if (doc.exists) {
-        return $modelName.fromJson(doc.data() as Map<String, dynamic>);
+        return $modelName.fromMap(doc.data() as Map<String, dynamic>);
       } else {
         throw Read${modelName}Exception('$modelName not found');
       }

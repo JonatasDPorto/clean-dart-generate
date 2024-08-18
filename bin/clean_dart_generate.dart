@@ -67,7 +67,7 @@ void createRepository() {
 
   forEachModel((modelFileName, modelName) {
     final externalFile = File(
-      p.join(infraDir.path, '${modelFileName}_repository.dart'),
+      p.join(externalDir.path, '${modelFileName}_repository.dart'),
     );
     externalFile.writeAsStringSync(
       generateRepositoryClass(modelFileName, modelName),
