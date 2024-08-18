@@ -6,7 +6,7 @@ abstract class ${modelName}RepositoryInterface {
 
   Future<void> create$modelName(Map<String, dynamic> data);
 
-  Future<$modelName> read$modelName(String id);
+  Future<Map<String, dynamic>> read$modelName(String id);
 
   Future<void> update$modelName(Map<String, dynamic> data);
 

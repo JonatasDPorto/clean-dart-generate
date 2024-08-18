@@ -1,69 +1,60 @@
 String generateDatasourceClass(String modelFileName, String modelName) {
   return '''
-import 'package:barber_shop/domain/exceptions/server_exception.dart';
-import '../../../domain/errors/error.dart';
-import '../repositories/${modelFileName}_repository.dart';
-import 'package:dart_either/dart_either.dart';
-import '../../../domain/errors/crud_error.dart';
-import '../../../domain/errors/server_error.dart';
-import '../.././domain/exceptions/${modelFileName}_crud_exception.dart';
-import '../model/$modelFileName.dart';
-import 'datasource.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../domain/exceptions/${modelFileName}_crud_exception.dart';
+import '../../infra/model/$modelFileName.dart';
+import '../../infra/repositories/${modelFileName}_repository_interface.dart';
 
-class ${modelName}Datasource extends DatasourceInterface {
-  final ${modelName}Repository repository;
+class ${modelName}Datasource extends ${modelName}DatasourceInterface {
 
-  ${modelName}Datasource(this.repository);
+  final CollectionReference collection = FirebaseFirestore.instance.collection('${modelName.toLowerCase()}s');
 
-  Future<Either<AppError, void>> create$modelName($modelName data) async {
+  @override
+  Future<void> create$modelName(Map<String, dynamic> data) async {
     try {
-      await repository.create$modelName(data.toMap());
-      return const Right(null);
-    } on Create${modelName}Exception catch (e) {
-      return Left(CreateError(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerError(e.message));
+      await collection.add(data);
+    } on FirebaseException catch (e) {
+      throw Create${modelName}Exception('Failed to create $modelName: \${e.message}');
     } catch (e) {
-      return Left(AppError('An unknown error occurred: \$e'));
+      throw Create${modelName}Exception('Unexpected error: \$e');
     }
   }
 
-  Future<Either<AppError, $modelName>> read$modelName(String id) async {
+  @override
+  Future<Map<String, dynamic>> read$modelName(String id) async {
     try {
-      final result = await repository.read$modelName(id);
-      return Right(result);
-    } on Read${modelName}Exception catch (e) {
-      return Left(ReadError(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerError(e.message));
+      DocumentSnapshot doc = await collection.doc(id).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>;
+      } else {
+        throw Read${modelName}Exception('$modelName not found');
+      }
+    } on FirebaseException catch (e) {
+      throw Read${modelName}Exception('Failed to read $modelName: \${e.message}');
     } catch (e) {
-      return Left(AppError('An unknown error occurred: \$e'));
+      throw Read${modelName}Exception('Unexpected error: \$e');
     }
   }
 
-  Future<Either<AppError, void>> update$modelName($modelName data) async {
+  @override
+  Future<void> update$modelName(Map<String, dynamic> data) async {
     try {
-      await repository.update$modelName(data.toMap());
-      return const Right(null);
-    } on Update${modelName}Exception catch (e) {
-      return Left(UpdateError(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerError(e.message));
+      await collection.doc(data['id']).update(data);
+    } on FirebaseException catch (e) {
+      throw Update${modelName}Exception('Failed to update $modelName: \${e.message}');
     } catch (e) {
-      return Left(AppError('An unknown error occurred: \$e'));
+      throw Update${modelName}Exception('Unexpected error: \$e');
     }
   }
 
-  Future<Either<AppError, void>> delete$modelName(String id) async {
+  @override
+  Future<void> delete$modelName(String id) async {
     try {
-      await repository.delete$modelName(id);
-      return const Right(null);
-    } on Delete${modelName}Exception catch (e) {
-      return Left(DeleteError(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerError(e.message));
+      await collection.doc(id).delete();
+    } on FirebaseException catch (e) {
+      throw Delete${modelName}Exception('Failed to delete $modelName: \${e.message}');
     } catch (e) {
-      return Left(AppError('An unknown error occurred: \$e'));
+      throw Delete${modelName}Exception('Unexpected error: \$e');
     }
   }
 }

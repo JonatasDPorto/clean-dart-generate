@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'extensions.dart';
-import 'external/repositories.dart';
+import 'external/datasources.dart';
 import 'domain/errors.dart';
 import 'domain/exceptions.dart';
-import 'external/datasources.dart';
+import 'external/repositories.dart';
 import 'infra/repositories_interface.dart';
 
 void main(List<String> arguments) {
@@ -53,7 +53,7 @@ void createDatasource() {
   final eachDir = Directory(p.join(baseDir, 'datasources'));
   eachDir.createSync(recursive: true);
   forEachModel((modelFileName, modelName) {
-    final file = File(p.join(dir.path, '${modelFileName}_datasource.dart'));
+    final file = File(p.join(eachDir.path, '${modelFileName}_datasource.dart'));
     file.writeAsStringSync(generateDatasourceClass(modelFileName, modelName));
   });
 }
