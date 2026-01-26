@@ -1,7 +1,7 @@
 String generateRepositoryClass(String modelFileName, String modelName) {
   return '''
-import 'package:dart_either/dart_either.dart';
-import 'package:barber_shop/domain/exceptions/server_exception.dart';
+import 'package:either_dart/either.dart';
+import '../../../domain/exceptions/server_exception.dart';
 import '../../../domain/errors/error.dart';
 import '../../../domain/errors/crud_error.dart';
 import '../../../domain/errors/server_error.dart';
@@ -11,7 +11,7 @@ import '../../infra/repositories/${modelFileName}_repository_interface.dart';
 import '../datasources/${modelFileName}_datasource.dart';
 
 class ${modelName}Repository extends ${modelName}RepositoryInterface {
-  final ${modelName}DatasourceInterface datasource;
+  final ${modelName}Datasource datasource;
 
   ${modelName}Repository(this.datasource);
 
@@ -37,6 +37,19 @@ class ${modelName}Repository extends ${modelName}RepositoryInterface {
       return Right(model);
     } on Read${modelName}Exception catch (e) {
       return Left(ReadError(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerError(e.message));
+    } catch (e) {
+      return Left(AppError('An unknown error occurred: \$e'));
+    }
+  }
+
+  @override
+  Future<Either<AppError, List<$modelName>>> listAll$modelName() async {
+    try {
+      final results = await datasource.listAll$modelName();
+      final models = results.map((data) => $modelName.fromMap(data)).toList();
+      return Right(models);
     } on ServerException catch (e) {
       return Left(ServerError(e.message));
     } catch (e) {
